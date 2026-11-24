@@ -15,12 +15,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from .config import PreprocessingConfig
 
 
-def _require_imaging_deps() -> Dict[str, Any]:
+def _require_imaging_deps() -> dict[str, Any]:
     try:
         import cv2
         import numpy as np
@@ -72,7 +72,7 @@ def normalize_to_uint8(image: Any) -> Any:
 
 def preprocess_ct_slice(
     image: Any,
-    config: Optional[PreprocessingConfig] = None,
+    config: PreprocessingConfig | None = None,
 ) -> PreprocessingArtifacts:
     """Run the full denoising, contrast enhancement, and watershed pipeline on one 2D CT slice."""
     deps = _require_imaging_deps()
@@ -87,11 +87,16 @@ def preprocess_ct_slice(
     original_u8 = normalize_to_uint8(image)
 
     # 1. Median filter (salt-and-pepper noise removal)
-    ksize = cfg.median_kernel_size if cfg.median_kernel_size % 2 == 1 else cfg.median_kernel_size + 1
+    ksize = cfg.median_kernel_size
+    if ksize % 2 == 0:
+        ksize += 1
     median_img = cv2.medianBlur(original_u8, ksize)
 
     # 2. Gaussian filter (high-frequency noise suppression, sigma=2.0)
-    gaussian_img = ndimage.gaussian_filter(median_img.astype(np.float64), sigma=cfg.gaussian_sigma)
+    gaussian_img = ndimage.gaussian_filter(
+        median_img.astype(np.float64),
+        sigma=cfg.gaussian_sigma,
+    )
     gaussian_u8 = normalize_to_uint8(gaussian_img)
 
     # 3. Contrast Limited Adaptive Histogram Equalization (AHE / CLAHE)
@@ -152,9 +157,9 @@ def preprocess_ct_slice(
 def preprocess_dicom_directory(
     input_dir: Path | str,
     output_dir: Path | str,
-    config: Optional[PreprocessingConfig] = None,
+    config: PreprocessingConfig | None = None,
 ) -> int:
-    """Batch-preprocess all DICOM slices in ``input_dir`` and save PNG/NPY outputs to ``output_dir``."""
+    """Batch-preprocess all DICOM slices in ``input_dir`` and save PNG outputs."""
     try:
         import cv2
         import pydicom

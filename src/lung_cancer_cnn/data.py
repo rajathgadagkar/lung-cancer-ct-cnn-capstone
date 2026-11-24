@@ -6,7 +6,7 @@ import csv
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from .config import DatasetConfig
 
@@ -28,7 +28,7 @@ class CaseRecord:
     contrast_tag: str = ""
 
 
-def parse_ct_filename(filename: str) -> Tuple[int, int, int]:
+def parse_ct_filename(filename: str) -> tuple[int, int, int]:
     """Extract ``(case_id, age, label)`` from a Kaggle Lung CT Challenge filename.
 
     Example:
@@ -47,10 +47,10 @@ def parse_ct_filename(filename: str) -> Tuple[int, int, int]:
     )
 
 
-def load_overview_metadata(csv_path: Path | str) -> List[CaseRecord]:
+def load_overview_metadata(csv_path: Path | str) -> list[CaseRecord]:
     """Load and parse ``overview.csv`` using only Python's standard library."""
     path = Path(csv_path)
-    records: List[CaseRecord] = []
+    records: list[CaseRecord] = []
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
@@ -69,7 +69,7 @@ def load_overview_metadata(csv_path: Path | str) -> List[CaseRecord]:
     return records
 
 
-def summarize_overview_metadata(records: List[CaseRecord]) -> Dict[str, Any]:
+def summarize_overview_metadata(records: list[CaseRecord]) -> dict[str, Any]:
     """Compute descriptive summary statistics for the CT dataset metadata."""
     if not records:
         return {
@@ -99,8 +99,8 @@ def summarize_overview_metadata(records: List[CaseRecord]) -> Dict[str, Any]:
 def load_dicom_dataset(
     dicom_dir: Path | str,
     image_size: int = 256,
-) -> Tuple[Any, Any, List[str]]:
-    """Load preprocessed ``.dcm`` slices, resize to ``(image_size, image_size)``, and extract labels."""
+) -> tuple[Any, Any, list[str]]:
+    """Load preprocessed ``.dcm`` slices, resize to square ``image_size``, and extract labels."""
     try:
         import cv2
         import numpy as np
@@ -115,9 +115,9 @@ def load_dicom_dataset(
     if not dcm_paths:
         raise FileNotFoundError(f"No .dcm files found in {dicom_dir}")
 
-    images: List[Any] = []
-    labels: List[int] = []
-    filenames: List[str] = []
+    images: list[Any] = []
+    labels: list[int] = []
+    filenames: list[str] = []
 
     for path in dcm_paths:
         _, _, label = parse_ct_filename(path.name)
@@ -133,8 +133,8 @@ def load_dicom_dataset(
 def prepare_train_val_test_splits(
     images: Any,
     labels: Any,
-    config: Optional[DatasetConfig] = None,
-) -> Dict[str, Any]:
+    config: DatasetConfig | None = None,
+) -> dict[str, Any]:
     """Split augmented images into normalized float32 80% train, 10% val, 10% test tensors."""
     try:
         import numpy as np

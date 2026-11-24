@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from .config import BENCHMARK_RESULTS
 
@@ -28,7 +28,7 @@ def format_benchmark_table() -> str:
     return "\n".join(rows)
 
 
-def evaluate_model(model: Any, x_test: Any, y_test: Any) -> Dict[str, Any]:
+def evaluate_model(model: Any, x_test: Any, y_test: Any) -> dict[str, Any]:
     """Evaluate a trained Keras model on a test split and compute classification metrics."""
     try:
         import numpy as np
@@ -59,10 +59,10 @@ def evaluate_model(model: Any, x_test: Any, y_test: Any) -> Dict[str, Any]:
 
 
 def save_training_curves(
-    history: Dict[str, Any],
+    history: dict[str, Any],
     output_dir: Path | str,
     prefix: str = "proposed",
-) -> Optional[Path]:
+) -> Path | None:
     """Save accuracy and loss curves from a Keras training history dictionary."""
     try:
         import matplotlib.pyplot as plt

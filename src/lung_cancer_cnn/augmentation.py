@@ -7,11 +7,12 @@ in Section 6.2 and Appendix B of the Capstone Report.
 
 from __future__ import annotations
 
-from typing import Any, List, Optional, Sequence, Tuple
+from collections.abc import Sequence
+from typing import Any
 
 from .config import AugmentationConfig
 
-AUGMENTATION_SET_NAMES: Tuple[str, ...] = (
+AUGMENTATION_SET_NAMES: tuple[str, ...] = (
     "01_original",
     "02_sheared",
     "03_scaled",
@@ -29,7 +30,7 @@ AUGMENTATION_SET_NAMES: Tuple[str, ...] = (
 )
 
 
-def _require_aug_deps() -> Tuple[Any, Any]:
+def _require_aug_deps() -> tuple[Any, Any]:
     try:
         import cv2
         import numpy as np
@@ -41,13 +42,13 @@ def _require_aug_deps() -> Tuple[Any, Any]:
     return np, cv2
 
 
-def horizontal_flip(images: Sequence[Any]) -> List[Any]:
+def horizontal_flip(images: Sequence[Any]) -> list[Any]:
     """Mirror each 2D image left-to-right."""
     np, _ = _require_aug_deps()
     return [np.ascontiguousarray(np.asarray(img)[:, ::-1]) for img in images]
 
 
-def vertical_flip(images: Sequence[Any]) -> List[Any]:
+def vertical_flip(images: Sequence[Any]) -> list[Any]:
     """Mirror each 2D image top-to-bottom."""
     np, _ = _require_aug_deps()
     return [np.ascontiguousarray(np.asarray(img)[::-1, :]) for img in images]
@@ -55,14 +56,14 @@ def vertical_flip(images: Sequence[Any]) -> List[Any]:
 
 def random_scale(
     images: Sequence[Any],
-    scale_range: Tuple[float, float] = (0.9, 1.0),
-    rng: Optional[Any] = None,
-) -> List[Any]:
+    scale_range: tuple[float, float] = (0.9, 1.0),
+    rng: Any | None = None,
+) -> list[Any]:
     """Apply centered affine scaling within ``scale_range`` while preserving image dimensions."""
     np, cv2 = _require_aug_deps()
     generator = rng if rng is not None else np.random.default_rng(42)
 
-    results: List[Any] = []
+    results: list[Any] = []
     for img in images:
         arr = np.asarray(img)
         h, w = arr.shape[:2]
@@ -75,21 +76,23 @@ def random_scale(
             ],
             dtype=np.float32,
         )
-        warped = cv2.warpAffine(arr, matrix, (w, h), borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+        warped = cv2.warpAffine(
+            arr, matrix, (w, h), borderMode=cv2.BORDER_CONSTANT, borderValue=0
+        )
         results.append(warped)
     return results
 
 
 def random_shear(
     images: Sequence[Any],
-    shear_degrees_range: Tuple[float, float] = (0.0, 20.0),
-    rng: Optional[Any] = None,
-) -> List[Any]:
+    shear_degrees_range: tuple[float, float] = (0.0, 20.0),
+    rng: Any | None = None,
+) -> list[Any]:
     """Apply horizontal affine shear in degrees within ``shear_degrees_range``."""
     np, cv2 = _require_aug_deps()
     generator = rng if rng is not None else np.random.default_rng(42)
 
-    results: List[Any] = []
+    results: list[Any] = []
     for img in images:
         arr = np.asarray(img)
         h, w = arr.shape[:2]
@@ -102,7 +105,9 @@ def random_shear(
             ],
             dtype=np.float32,
         )
-        warped = cv2.warpAffine(arr, matrix, (w, h), borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+        warped = cv2.warpAffine(
+            arr, matrix, (w, h), borderMode=cv2.BORDER_CONSTANT, borderValue=0
+        )
         results.append(warped)
     return results
 
@@ -110,8 +115,8 @@ def random_shear(
 def augment_dataset_14x(
     images: Sequence[Any],
     labels: Sequence[int],
-    config: Optional[AugmentationConfig] = None,
-) -> Tuple[Any, Any]:
+    config: AugmentationConfig | None = None,
+) -> tuple[Any, Any]:
     """Generate the exact 14-fold augmented dataset (14 * N images and duplicated labels)."""
     np, _ = _require_aug_deps()
     cfg = config or AugmentationConfig()

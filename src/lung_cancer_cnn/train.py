@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from .augmentation import augment_dataset_14x
 from .config import AugmentationConfig, DatasetConfig, ModelConfig, TrainingConfig
@@ -15,11 +15,11 @@ from .models import build_model
 def train_pipeline(
     dicom_dir: Path | str,
     output_dir: Path | str = "outputs",
-    model_config: Optional[ModelConfig] = None,
-    dataset_config: Optional[DatasetConfig] = None,
-    augmentation_config: Optional[AugmentationConfig] = None,
-    training_config: Optional[TrainingConfig] = None,
-) -> Dict[str, Any]:
+    model_config: ModelConfig | None = None,
+    dataset_config: DatasetConfig | None = None,
+    augmentation_config: AugmentationConfig | None = None,
+    training_config: TrainingConfig | None = None,
+) -> dict[str, Any]:
     """Load preprocessed DICOM scans, apply 14x augmentation, train CNN, and evaluate."""
     try:
         from tensorflow import keras

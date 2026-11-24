@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
 
 
 @dataclass(frozen=True)
@@ -13,17 +12,17 @@ class PreprocessingConfig:
     median_kernel_size: int = 3
     gaussian_sigma: float = 2.0
     clahe_clip_limit: float = 2.0
-    clahe_tile_grid_size: Tuple[int, int] = (8, 8)
+    clahe_tile_grid_size: tuple[int, int] = (8, 8)
     extended_minima_h: float = 2.0
-    output_size: Tuple[int, int] = (512, 512)
+    output_size: tuple[int, int] = (512, 512)
 
 
 @dataclass(frozen=True)
 class AugmentationConfig:
     """Parameters for the 14-fold deterministic CT data augmentation pipeline."""
 
-    scale_range: Tuple[float, float] = (0.9, 1.0)
-    shear_degrees_range: Tuple[float, float] = (0.0, 20.0)
+    scale_range: tuple[float, float] = (0.9, 1.0)
+    shear_degrees_range: tuple[float, float] = (0.0, 20.0)
     random_seed: int = 42
     fold_multiplier: int = 14
 
@@ -39,10 +38,10 @@ class DatasetConfig:
     val_fraction_of_trainval: float = 0.111  # 0.111 * 0.90 ≈ 0.10 of total dataset
     test_random_state: int = 23
     val_random_state: int = 21
-    class_names: Tuple[str, str] = ("Benign / Non-Contrast (0)", "Malignant / Contrast (1)")
+    class_names: tuple[str, str] = ("Benign / Non-Contrast (0)", "Malignant / Contrast (1)")
 
     @property
-    def input_shape(self) -> Tuple[int, int, int]:
+    def input_shape(self) -> tuple[int, int, int]:
         return (self.image_size, self.image_size, self.channels)
 
 
@@ -51,7 +50,7 @@ class ModelConfig:
     """Architecture selection and regularization hyperparameters."""
 
     architecture: str = "proposed"
-    input_shape: Tuple[int, int, int] = (256, 256, 1)
+    input_shape: tuple[int, int, int] = (256, 256, 1)
     num_classes: int = 2
     dropout_rate: float = 0.7
 
@@ -66,7 +65,7 @@ class TrainingConfig:
     early_stopping_patience: int = 30
     early_stopping_monitor: str = "val_accuracy"
     loss: str = "binary_crossentropy"
-    metrics: List[str] = field(default_factory=lambda: ["accuracy"])
+    metrics: list[str] = field(default_factory=lambda: ["accuracy"])
 
 
 @dataclass(frozen=True)
@@ -89,7 +88,7 @@ class BenchmarkRecord:
     early_stopped_epoch: int
 
 
-BENCHMARK_RESULTS: Dict[str, BenchmarkRecord] = {
+BENCHMARK_RESULTS: dict[str, BenchmarkRecord] = {
     "lenet": BenchmarkRecord(
         model_name="LeNet",
         layers=5,

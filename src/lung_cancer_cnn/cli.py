@@ -6,7 +6,6 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import List, Optional
 
 from . import __author__, __email__, __version__
 from .config import DatasetConfig, ModelConfig, PreprocessingConfig, TrainingConfig
@@ -105,7 +104,7 @@ def _cmd_train(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="lung-cancer-cnn",
-        description="Lung Cancer Detection & Classification using Image Processing and 12-Layer CNN",
+        description="Lung Cancer Detection & Classification using 12-Layer CNN",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -128,7 +127,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_prep.set_defaults(func=_cmd_preprocess)
 
     p_train = sub.add_parser("train", help="Train a benchmarked CNN architecture on DICOM scans")
-    p_train.add_argument("--dicom-dir", required=True, help="Directory with preprocessed .dcm files")
+    p_train.add_argument(
+        "--dicom-dir", required=True, help="Directory with preprocessed .dcm files"
+    )
     p_train.add_argument("--output-dir", default="outputs", help="Directory for model & plots")
     p_train.add_argument(
         "--arch",
@@ -145,7 +146,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     return int(args.func(args))
