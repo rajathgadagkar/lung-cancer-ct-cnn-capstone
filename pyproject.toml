@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lung-cancer-cnn-capstone"
+version = "1.0.0"
+description = "Lung Cancer Detection and Classification from CT Scans using Image Processing, Watershed Segmentation, and a Custom 12-Layer CNN Architecture."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+authors = [
+    { name = "Rajath Gadagkar", email = "rajathgadagkar@gmail.com" },
+]
+maintainers = [
+    { name = "Rajath Gadagkar", email = "rajathgadagkar@gmail.com" },
+]
+keywords = [
+    "lung-cancer-detection",
+    "deep-learning",
+    "convolutional-neural-network",
+    "medical-imaging",
+    "ct-scan",
+    "watershed-segmentation",
+    "image-processing",
+    "tensorflow",
+    "keras",
+    "capstone-project",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dependencies = []
+
+[project.optional-dependencies]
+ml = [
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "scipy>=1.10.0",
+    "scikit-image>=0.21.0",
+    "scikit-learn>=1.3.0",
+    "opencv-python-headless>=4.8.0",
+    "pydicom>=2.4.0",
+    "matplotlib>=3.7.0",
+    "tensorflow>=2.13.0",
+]
+dev = [
+    "pytest>=7.4.0",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+lung-cancer-cnn = "lung_cancer_cnn.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"

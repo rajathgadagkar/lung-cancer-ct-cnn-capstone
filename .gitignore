@@ -1,0 +1,33 @@
+# Large local datasets & trained TensorFlow SavedModel checkpoints (exceed GitHub 100 MB limit)
+Datasets/
+Final_Test/
+newprep_dataset/
+outputs/
+*.h5
+*.keras
+*.pb
+*.dcm
+*.tif
+*.tiff
+
+# Original root copies (canonical URL-safe versions live in docs/reports/)
+/Capstone Poster 416.pdf
+/Capstone_Report_416_FINAL.docx
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# macOS / Editor files
+.DS_Store
+.vscode/
+.idea/

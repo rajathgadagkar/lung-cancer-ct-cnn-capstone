@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lung Cancer Detection &amp; Classification — CNN Capstone Project | Rajath Gadagkar</title>
+  <meta name="description" content="Interactive showcase for the PES University B.Tech Capstone Project: Lung Cancer Detection and Classification from CT Scans using Image Processing, Watershed Segmentation, and a Custom 12-Layer CNN (99.28% test accuracy)." />
+  <meta name="author" content="Rajath Gadagkar" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>LungCancer<strong>CNN</strong></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#pipeline">Pipeline</a>
+        <a href="#augmentation">14× Augmenter</a>
+        <a href="#architecture">12-Layer CNN</a>
+        <a href="#benchmarks">Benchmarks</a>
+        <a href="#documents">Poster &amp; Report</a>
+      </nav>
+      <div class="header-actions">
+        <button id="themeToggle" class="btn btn-ghost" type="button" aria-label="Toggle color theme">
+          <span id="themeIcon">☀️</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="badge-row">
+            <span class="badge badge-accent">PES University · B.Tech ECE Capstone</span>
+            <span class="badge">Aug 2020 – May 2021</span>
+          </div>
+          <h1>Lung Cancer Detection &amp; Classification Using Image Processing and a 12-Layer CNN</h1>
+          <p class="lead">
+            An end-to-end medical imaging pipeline combining <strong>Median &amp; Gaussian denoising</strong>,
+            <strong>Adaptive Histogram Equalization (CLAHE)</strong>, <strong>marker-controlled Watershed segmentation</strong>,
+            <strong>14× affine augmentation</strong>, and a custom <strong>12-layer Convolutional Neural Network</strong>
+            achieving <strong>99.28% test accuracy</strong> on low-dose chest CT scans.
+          </p>
+          <div class="cta-row">
+            <a href="#pipeline" class="btn btn-primary">Explore CT Pipeline</a>
+            <a href="#augmentation" class="btn btn-secondary">Try 14× Augmentation Lab</a>
+            <a href="#documents" class="btn btn-ghost">Poster &amp; Final Report</a>
+          </div>
+          <div class="author-bar">
+            <span><strong>Author:</strong> Rajath Gadagkar (<a href="mailto:rajathgadagkar@gmail.com">rajathgadagkar@gmail.com</a>)</span>
+            <span><strong>Guide:</strong> Prof. H R Vanamala, Dept. of ECE, PES University</span>
+          </div>
+        </div>
+
+        <div class="hero-metrics" aria-label="Key evaluation metrics">
+          <div class="kpi-card kpi-highlight">
+            <div class="kpi-label">Test Accuracy</div>
+            <div class="kpi-value">99.28%</div>
+            <div class="kpi-sub">139 / 140 validation · 138 / 140 unseen test</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Precision / Recall / F1</div>
+            <div class="kpi-value">1.00 / 0.99 / 0.99</div>
+            <div class="kpi-sub">Malignant class · Macro avg 0.99</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Proposed Architecture</div>
+            <div class="kpi-value">12 Layers</div>
+            <div class="kpi-sub">8 Conv2D · 8 BatchNorm · 4 Dense · 52.84M params</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Augmented Dataset</div>
+            <div class="kpi-value">1,400 Scans</div>
+            <div class="kpi-sub">100 CT slices × 14 folds (80 / 10 / 10 split)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive CT Pipeline Explorer -->
+    <section id="pipeline" class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">01 · Medical Image Processing</span>
+            <h2>Interactive CT Preprocessing &amp; Watershed Pipeline</h2>
+            <p class="section-desc">
+              Step through every transformation applied to raw DICOM chest CT slices—from noise suppression
+              and local contrast enhancement to marker-controlled Watershed segmentation and K-Means comparison.
+            </p>
+          </div>
+          <div class="stepper-controls">
+            <button id="prevStageBtn" class="btn btn-secondary" type="button">← Prev</button>
+            <span id="stageCounter" class="stage-counter">1 / 10</span>
+            <button id="nextStageBtn" class="btn btn-secondary" type="button">Next →</button>
+          </div>
+        </div>
+
+        <div id="stageTabs" class="stage-tabs" role="tablist" aria-label="Pipeline stages"></div>
+
+        <div class="pipeline-viewer card">
+          <div class="pipeline-visual">
+            <img id="stageImage" src="assets/figures/block_diagram.png" alt="Pipeline stage visualization" />
+          </div>
+          <div class="pipeline-details">
+            <span id="stageBadge" class="badge badge-accent">Overview</span>
+            <h3 id="stageTitle">System Block Diagram</h3>
+            <p id="stageDescription"></p>
+            <div class="detail-box">
+              <div class="detail-label">Implementation (MATLAB &amp; Python)</div>
+              <pre><code id="stageCode"></code></pre>
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Why This Step Matters</div>
+              <p id="stageRationale"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive 14x Data Augmentation Sandbox -->
+    <section id="augmentation" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">02 · Anti-Overfitting Strategy</span>
+            <h2>Interactive 14× Data Augmentation Lab</h2>
+            <p class="section-desc">
+              To prevent overfitting on the 100-slice CT dataset, we expanded the corpus 14× to 1,400 images
+              using deterministic combinations of Shear (0°–20°), Scale (0.90–1.00), Horizontal Flip, and Vertical Flip.
+              Select any of the 14 capstone presets or tweak parameters live below.
+            </p>
+          </div>
+        </div>
+
+        <div class="aug-grid">
+          <div class="card aug-canvas-card">
+            <div class="canvas-wrap">
+              <canvas id="augCanvas" width="384" height="384" aria-label="Live augmented CT scan preview"></canvas>
+            </div>
+            <div class="canvas-meta">
+              <span id="augActivePreset" class="badge badge-accent">#1 · Original Pre-Processed</span>
+              <span id="augMatrixText" class="mono-muted">Scale: 1.00× · Shear: 0° · H-Flip: Off · V-Flip: Off</span>
+            </div>
+          </div>
+
+          <div class="card aug-controls-card">
+            <h3>Live Affine Controls</h3>
+            <div class="control-group">
+              <label for="scaleSlider">
+                <span>Scale Factor</span>
+                <strong id="scaleVal">1.00×</strong>
+              </label>
+              <input id="scaleSlider" type="range" min="0.85" max="1.05" step="0.01" value="1.00" />
+            </div>
+
+            <div class="control-group">
+              <label for="shearSlider">
+                <span>Shear Angle</span>
+                <strong id="shearVal">0°</strong>
+              </label>
+              <input id="shearSlider" type="range" min="0" max="20" step="1" value="0" />
+            </div>
+
+            <div class="toggle-row">
+              <label class="toggle-pill">
+                <input id="hFlipToggle" type="checkbox" />
+                <span>Horizontal Flip</span>
+              </label>
+              <label class="toggle-pill">
+                <input id="vFlipToggle" type="checkbox" />
+                <span>Vertical Flip</span>
+              </label>
+              <button id="resetAugBtn" class="btn btn-ghost btn-sm" type="button">Reset</button>
+            </div>
+
+            <h3 class="subhead">All 14 Capstone Augmentation Folds (100 → 1,400)</h3>
+            <div id="presetGrid" class="preset-grid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive 12-Layer CNN Architecture Inspector -->
+    <section id="architecture" class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">03 · Deep Learning Architecture</span>
+            <h2>Interactive 12-Layer Proposed CNN Inspector</h2>
+            <p class="section-desc">
+              Click any layer in the 31-module Keras Sequential stack (8 Conv2D + 8 BatchNorm + 4 MaxPool2D +
+              6 Dropout(0.7) + Flatten + 4 Dense) to inspect tensor dimensions, parameter math, and design rationale.
+            </p>
+          </div>
+          <div class="arch-legend">
+            <span class="legend-item"><i class="dot dot-conv"></i>Conv2D</span>
+            <span class="legend-item"><i class="dot dot-bn"></i>BatchNorm</span>
+            <span class="legend-item"><i class="dot dot-pool"></i>MaxPool2D</span>
+            <span class="legend-item"><i class="dot dot-drop"></i>Dropout 0.7</span>
+            <span class="legend-item"><i class="dot dot-dense"></i>Dense / Flatten</span>
+          </div>
+        </div>
+
+        <div class="arch-layout">
+          <div id="layerStack" class="layer-stack card" role="listbox" aria-label="CNN Layers"></div>
+
+          <div class="layer-inspector card">
+            <div class="inspector-top">
+              <span id="inspType" class="badge badge-accent">Conv2D</span>
+              <span id="inspIndex" class="mono-muted">Layer 1 / 31</span>
+            </div>
+            <h3 id="inspName">conv2d</h3>
+            <div class="insp-stats">
+              <div class="stat-box">
+                <span class="stat-label">Output Tensor</span>
+                <strong id="inspShape">(None, 62, 62, 96)</strong>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Parameters</span>
+                <strong id="inspParams">11,712</strong>
+              </div>
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Configuration</div>
+              <p id="inspConfig"></p>
+            </div>
+            <div class="detail-box">
+              <div class="detail-label">Architectural Design Rationale</div>
+              <p id="inspWhy"></p>
+            </div>
+            <div class="summary-totals">
+              <div><span>Total Params</span><strong>52,843,458</strong></div>
+              <div><span>Trainable</span><strong>52,837,890</strong></div>
+              <div><span>Non-Trainable (BN)</span><strong>5,568</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Model Benchmarks & Training Curves -->
+    <section id="benchmarks" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">04 · Comparative Evaluation</span>
+            <h2>Architecture Benchmark Dashboard</h2>
+            <p class="section-desc">
+              All four CNN architectures were trained on the exact same 1,400-image augmented dataset
+              (80% train / 10% validation / 10% test, batch size 20, Adam optimizer, Binary Cross-Entropy).
+            </p>
+          </div>
+          <div id="metricSwitcher" class="metric-switcher" role="tablist" aria-label="Benchmark metric">
+            <button class="tab-btn active" data-metric="accuracy" type="button">Accuracy (%)</button>
+            <button class="tab-btn" data-metric="valLoss" type="button">Val Loss (Lower Better)</button>
+            <button class="tab-btn" data-metric="f1" type="button">F1-Score (Class 1)</button>
+            <button class="tab-btn" data-metric="errors" type="button">Errors / 140</button>
+          </div>
+        </div>
+
+        <div class="bench-grid">
+          <div class="card">
+            <h3 id="chartHeading">Test Accuracy Comparison (%)</h3>
+            <div id="benchBars" class="bench-bars"></div>
+            <p id="chartInsight" class="chart-insight"></p>
+          </div>
+
+          <div class="card">
+            <h3>Capstone Training &amp; Evaluation Plots</h3>
+            <div class="curve-tabs" id="curveTabs">
+              <button class="tab-btn active" data-curve="proposed_acc" type="button">Proposed Acc</button>
+              <button class="tab-btn" data-curve="proposed_loss" type="button">Proposed Loss</button>
+              <button class="tab-btn" data-curve="proposed_report" type="button">Classification Report</button>
+              <button class="tab-btn" data-curve="alexnet" type="button">AlexNet</button>
+              <button class="tab-btn" data-curve="lenet" type="button">LeNet</button>
+              <button class="tab-btn" data-curve="vgg16" type="button">VGG16</button>
+            </div>
+            <div class="curve-frame">
+              <img id="curveImage" src="assets/figures/proposed_accuracy_curve.png" alt="Model evaluation curve" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <h3>Complete Evaluation Matrix (Table 7.1)</h3>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>Layers</th>
+                  <th>Parameters</th>
+                  <th>Accuracy</th>
+                  <th>Precision (0 / 1)</th>
+                  <th>Recall (0 / 1)</th>
+                  <th>F1-Score (0 / 1)</th>
+                  <th>Train Loss</th>
+                  <th>Val Loss</th>
+                  <th>Errors (/140)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>LeNet</td>
+                  <td>5</td>
+                  <td>7,391,874</td>
+                  <td>88.57%</td>
+                  <td>0.84 / 0.91</td>
+                  <td>0.91 / 0.85</td>
+                  <td>0.87 / 0.88</td>
+                  <td>2.42e-05</td>
+                  <td>0.9127</td>
+                  <td>17</td>
+                </tr>
+                <tr>
+                  <td>AlexNet</td>
+                  <td>8</td>
+                  <td>56,305,730</td>
+                  <td>89.99%</td>
+                  <td>0.88 / 0.92</td>
+                  <td>0.91 / 0.89</td>
+                  <td>0.89 / 0.91</td>
+                  <td>0.2752</td>
+                  <td>0.9657</td>
+                  <td>14</td>
+                </tr>
+                <tr>
+                  <td>VGG16</td>
+                  <td>16</td>
+                  <td>165,724,866</td>
+                  <td>51.43%</td>
+                  <td>0.46 / 0.00</td>
+                  <td>1.00 / 0.00</td>
+                  <td>0.63 / 0.00</td>
+                  <td>0.6931</td>
+                  <td>0.6930</td>
+                  <td>75</td>
+                </tr>
+                <tr class="row-highlight">
+                  <td><strong>Proposed 12-Layer CNN</strong></td>
+                  <td><strong>12</strong></td>
+                  <td><strong>52,843,458</strong></td>
+                  <td><strong>99.28%</strong></td>
+                  <td><strong>0.98 / 1.00</strong></td>
+                  <td><strong>1.00 / 0.99</strong></td>
+                  <td><strong>0.99 / 0.99</strong></td>
+                  <td><strong>0.1812</strong></td>
+                  <td><strong>0.0235</strong></td>
+                  <td><strong>1</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dataset Overview -->
+    <section id="dataset" class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">05 · Dataset &amp; Demographics</span>
+            <h2>Kaggle Lung CT Challenge Corpus Analysis</h2>
+            <p class="section-desc">
+              100 balanced middle-slice DICOM chest CT scans (50 positive / 50 negative, patient ages 39–83,
+              mean age 67.5 years) showing higher prevalence in patients aged 60+, expanded 14× to 1,400 images
+              (1,120 train / 140 validation / 140 test).
+            </p>
+          </div>
+        </div>
+        <div class="two-col">
+          <figure class="card figure-card">
+            <img src="assets/figures/age_distribution.png" alt="Patient age distribution histogram" />
+            <figcaption>Fig 4.1 — Left-skewed patient age distribution concentrated in the 60–75 year bracket.</figcaption>
+          </figure>
+          <figure class="card figure-card">
+            <img src="assets/figures/cancer_vs_age.png" alt="Cancer vs non-cancer age distribution" />
+            <figcaption>Fig 4.2 — Positive vs. negative case frequency across patient age cohorts.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Poster, Report & Citation -->
+    <section id="documents" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">06 · Official Capstone Deliverables</span>
+            <h2>Capstone Poster, Final Report &amp; Citation</h2>
+            <p class="section-desc">
+              Submitted in partial fulfillment of the B.Tech in Electronics &amp; Communication Engineering
+              at PES University, Bengaluru (August 2020 – May 2021).
+            </p>
+          </div>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="reports/Capstone_Poster_416.pdf" target="_blank" rel="noopener">
+              Open Poster (PDF)
+            </a>
+            <a class="btn btn-secondary" href="reports/Capstone_Report_416_FINAL.docx" download>
+              Download Final Report (DOCX)
+            </a>
+          </div>
+        </div>
+
+        <div class="docs-grid">
+          <div class="card poster-card">
+            <h3>Official Capstone Poster</h3>
+            <div class="pdf-frame">
+              <iframe src="reports/Capstone_Poster_416.pdf" title="PES University Capstone Poster PDF"></iframe>
+            </div>
+          </div>
+
+          <div class="card meta-card">
+            <h3>Capstone Team &amp; Credits</h3>
+            <ul class="credit-list">
+              <li><strong>Rajath Gadagkar</strong> — PES1201700136 (<a href="mailto:rajathgadagkar@gmail.com">rajathgadagkar@gmail.com</a>)</li>
+              <li><strong>Rhitesh Kumar Singh</strong> — PES1201700254</li>
+              <li><strong>Dhruv K.C</strong> — PES1201701265</li>
+              <li><strong>Nitin Kumar Pandit</strong> — PES1201701837</li>
+              <li><strong>Internal Guide:</strong> Prof. H R Vanamala, Associate Professor, Dept. of ECE, PES University</li>
+            </ul>
+
+            <div class="citation-box">
+              <div class="citation-head">
+                <strong>BibTeX Citation</strong>
+                <button id="copyBibtexBtn" class="btn btn-ghost btn-sm" type="button">Copy BibTeX</button>
+              </div>
+              <pre><code id="bibtexCode">@misc{gadagkar2021lungcancercnn,
+  author       = {Gadagkar, Rajath and Singh, Rhitesh Kumar and K.C, Dhruv and Pandit, Nitin Kumar},
+  title        = {Lung Cancer Detection and Classification Using Image Processing and CNN-Deep Learning Architecture},
+  year         = {2021},
+  howpublished = {B.Tech Capstone Project, Department of Electronics and Communication Engineering, PES University, Bengaluru},
+  note         = {Guided by Prof. H R Vanamala}
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2021–2026 <strong>Rajath Gadagkar</strong> · <a href="mailto:rajathgadagkar@gmail.com">rajathgadagkar@gmail.com</a> · MIT License</p>
+      <p class="mono-muted">Built for research &amp; educational demonstration — not intended for clinical diagnosis.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

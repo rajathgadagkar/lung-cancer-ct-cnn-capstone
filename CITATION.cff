@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this capstone project or codebase, please cite it as below."
+title: "Lung Cancer Detection and Classification Using Image Processing and CNN-Deep Learning Architecture"
+type: software
+version: "1.0.0"
+date-released: "2021-05-26"
+license: MIT
+authors:
+  - family-names: "Gadagkar"
+    given-names: "Rajath"
+    email: "rajathgadagkar@gmail.com"
+    affiliation: "PES University, Bengaluru"
+  - family-names: "Singh"
+    given-names: "Rhitesh Kumar"
+    affiliation: "PES University, Bengaluru"
+  - family-names: "K.C"
+    given-names: "Dhruv"
+    affiliation: "PES University, Bengaluru"
+  - family-names: "Pandit"
+    given-names: "Nitin Kumar"
+    affiliation: "PES University, Bengaluru"
+keywords:
+  - lung-cancer-detection
+  - deep-learning
+  - convolutional-neural-network
+  - medical-imaging
+  - watershed-segmentation
+  - ct-scan
+  - tensorflow
+  - keras
